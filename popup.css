@@ -1,0 +1,13 @@
+body {
+    width: 200px;
+    height: 150px;
+}
+
+.tools {
+    margin-left: 50%;
+    
+}
+
+form {
+    display: none;
+}

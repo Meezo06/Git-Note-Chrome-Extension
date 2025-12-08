@@ -4,8 +4,23 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Git Notes</title>
+        <link rel="stylesheet" href="popup.css">
     </head>
     <body>
-        
+        <div class="tools">
+            <button id="note-form-btn">Add new Note</button>
+        </div>
+        <form>
+            <button id="cancel-note-btn">Cancel</button>
+            <label for="url-input">Repository URL</label>
+            <input id="url-input">
+            <label for="note-input">Note</label>
+            <textarea id="note-input"></textarea>
+            <button id="add-note-btn">Add Note</button>
+        </form>
+        <div class="notes">
+
+        </div>
+        <script src="popup.js"></script>
     </body>
 </html>
