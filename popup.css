@@ -8,6 +8,6 @@ body {
     
 }
 
-form {
+.new-note {
     display: none;
 }
