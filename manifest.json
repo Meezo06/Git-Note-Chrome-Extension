@@ -3,7 +3,7 @@
     "name": "Git-Note",
     "version": "1.0",
     "description": "Make notes and highlight Github repositories",
-    "permissions": ["tabs", "contextMenus", "scripting", "storage"],
+    "permissions": ["activeTab", "scripting", "storage"],
     "background": {
         "service_worker": "serviceWorker.js"
     },
