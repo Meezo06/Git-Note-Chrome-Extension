@@ -10,8 +10,8 @@ async function load() {
     }
 
     const isGithubRepo = async (url) => {
-        const {ok: isOk} = await fetch(url);
-        return isOk;
+        const {ok: isOk, url} = await fetch(url, {method: 'HEAD'});
+        return isOk && url.startsWith("https://github.com");
     }
 
     const noteFormBtn = document.getElementById("note-form-btn");
@@ -22,9 +22,14 @@ async function load() {
     const noteInput = document.getElementById("note-input")
     const notesContainer = document.querySelector(".notes");
     const removeAllBtn = document.getElementById("remove-all-btn");
+    const editNoteForm = document.querySelector(".edit-note");
+    const editUrlInput = document.getElementById("edit-url-input");
+    const editNoteInput = document.getElementById("edit-input");
+    const editNoteBtn = document.getElementById("edit-note-btn");
+    const cancelEditBtn = document.getElementById("cancel-edit-btn");
     noteFormBtn.onclick = () => newNoteForm.style.display = "block";
     cancelNoteBtn.onclick = () => newNoteForm.style.display = "none";
-
+    cancelEditBtn.onclick = () => editNoteForm.style.display = "none";
 
     let currentUrl = await getCurrentTabUrl();
     await isGithubRepo(currentUrl) ? urlInput.value = currentUrl : urlInput.value = "";
@@ -81,11 +86,34 @@ async function load() {
                     <a href="https://github.com${repo}" target="_blank">Notes of ${repo}</a>        
             `;
             generalNotes.forEach((note, index) => {
+                const id = `${repo}-${index}`;
                 notesContainer.innerHTML += `
-                    <div id="${repo}-${index}">
+                    <div id="${id}">
                         <h3>${note}</h3>
+                        <button class="edit-btn">Edit</button>
+                        <button class="rmv-btn">Remove</button>
                     </div>
                 `
+                document.querySelector(`#${id} .edit-btn`).onclick = () => {
+                    editUrlInput.value = `github.com${repo}`;
+                    editNoteInput.value = note;
+                    editNoteForm.style.display = "block";
+                    editNoteBtn.onclick = async () => {
+                        if (!editNoteInput.value) {
+                            alert("Enter some note");
+                            return;
+                        }
+                        const repoObj = await chrome.storage.local.get(repo);
+                        repoObj.repo.generalNotes[index] = editNoteInput.value;
+                        chrome.storage.local.set(repoObj);
+                        editNoteForm.style.display = "none";
+                        showGeneralNotes();
+                    }
+                }
+                document.querySelector(`#${id} .rmv-btn`).onclick = () => {
+                    chrome.storage.local.remove(repo);
+                    showGeneralNotes();
+                }
             })
             notesContainer.innerHTML += '</div>';    
         })
