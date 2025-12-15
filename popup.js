@@ -10,8 +10,9 @@ async function load() {
     }
 
     const isGithubRepo = async (url) => {
-        const {ok: isOk, url} = await fetch(url, {method: 'HEAD'});
-        return isOk && url.startsWith("https://github.com");
+        if (!url.startsWith("https://github.com")) return false
+        const {ok: isOk} = await fetch(url, {method: 'HEAD'});
+        return isOk;
     }
 
     const noteFormBtn = document.getElementById("note-form-btn");
@@ -30,6 +31,9 @@ async function load() {
     noteFormBtn.onclick = () => newNoteForm.style.display = "block";
     cancelNoteBtn.onclick = () => newNoteForm.style.display = "none";
     cancelEditBtn.onclick = () => editNoteForm.style.display = "none";
+
+    showGeneralNotes();
+    setControllers();
 
     let currentUrl = await getCurrentTabUrl();
     await isGithubRepo(currentUrl) ? urlInput.value = currentUrl : urlInput.value = "";
@@ -66,60 +70,72 @@ async function load() {
                     }
                 });
             }
-            await showGeneralNotes();
+            showGeneralNotes();
+            setControllers();
         }
 
     })
 
     removeAllBtn.onclick = async () => {
         await chrome.storage.local.clear();
-        await showGeneralNotes();
+        showGeneralNotes();
+        setControllers();
     }
 
     async function showGeneralNotes() {
-        notesContainer.innerHTML = "";
         const notes = Object.entries(await chrome.storage.local.get(null));
-        console.log(notes);
+        let html = "";
         notes.forEach(([repo, {generalNotes}]) => {
-            notesContainer.innerHTML += `
+            html += `
                 <div id="${repo}">
                     <a href="https://github.com${repo}" target="_blank">Notes of ${repo}</a>        
             `;
             generalNotes.forEach((note, index) => {
                 const id = `${repo}-${index}`;
-                notesContainer.innerHTML += `
+                html += `
                     <div id="${id}">
                         <h3>${note}</h3>
                         <button class="edit-btn">Edit</button>
                         <button class="rmv-btn">Remove</button>
                     </div>
                 `
-                document.querySelector(`#${id} .edit-btn`).onclick = () => {
-                    editUrlInput.value = `github.com${repo}`;
-                    editNoteInput.value = note;
+            })
+            html += '</div>';    
+        })
+        notesContainer.innerHTML = html;
+    }
+
+    function setControllers() {
+        const reposNotes = document.querySelectorAll(".notes div");
+        for (const repo of reposNotes) {
+            const notes = document.querySelectorAll(`[id="${repo.id}"] div`);
+            let i = 0;
+            for (const note of notes) {
+                const noteText = document.querySelector(`[id="${note.id}"] h3`).textContent;
+                document.querySelector(`[id="${note.id}"] .edit-btn`).onclick = () => {
+                    editUrlInput.value = `github.com${repo.id}`;
+                    editNoteInput.value = noteText;
                     editNoteForm.style.display = "block";
                     editNoteBtn.onclick = async () => {
                         if (!editNoteInput.value) {
                             alert("Enter some note");
                             return;
                         }
-                        const repoObj = await chrome.storage.local.get(repo);
-                        repoObj.repo.generalNotes[index] = editNoteInput.value;
+                        const repoObj = await chrome.storage.local.get(repo.id);
+                        repoObj.repo.generalNotes[i] = editNoteInput.value;
                         chrome.storage.local.set(repoObj);
                         editNoteForm.style.display = "none";
                         showGeneralNotes();
                     }
                 }
-                document.querySelector(`#${id} .rmv-btn`).onclick = () => {
-                    chrome.storage.local.remove(repo);
+                document.querySelector(`[id="${note.id}"] .rmv-btn`).onclick = () => {
+                    chrome.storage.local.remove(note.id);
                     showGeneralNotes();
                 }
-            })
-            notesContainer.innerHTML += '</div>';    
-        })
+                i++;
+            }
+        }
     }
-
-    await showGeneralNotes();
 }
 
 load();
