@@ -15,6 +15,13 @@ async function load() {
         return isOk;
     }
 
+    const getRepoName = (url) => {
+        const repoRegex = /^(?:https?:\/\/[^/]+)?(\/?[^/?#]+(?:\/[^/?#]+)?)/;
+        let [, repo] = url.match(repoRegex);
+        if(!repo.startsWith("/")) repo = "/" + repo;
+        return repo;
+    }
+
     const noteFormBtn = document.getElementById("note-form-btn");
     const newNoteForm = document.querySelector(".new-note");
     const cancelNoteBtn = document.getElementById("cancel-note-btn");
@@ -32,24 +39,29 @@ async function load() {
     cancelNoteBtn.onclick = () => newNoteForm.style.display = "none";
     cancelEditBtn.onclick = () => editNoteForm.style.display = "none";
 
-    showGeneralNotes();
-    setControllers();
-
     let currentUrl = await getCurrentTabUrl();
-    await isGithubRepo(currentUrl) ? urlInput.value = currentUrl : urlInput.value = "";
+    if(await isGithubRepo(currentUrl)) {
+        const repoName = getRepoName(currentUrl);
+        urlInput.value = "github.com" + repoName;
+        await showGeneralNotes(repoName);
+    }
+    else {
+        urlInput.value = "";
+        await showGeneralNotes();
+    }
+    
+    setControls();
 
     addNoteBtn.addEventListener('click', async () => {
         // change input handling later
         if (!urlInput.value) alert("Please Enter a URL"); 
         else if (!noteInput.value) alert("Please Enter a note to add");
         else {
-            const repoRegex = /^(?:https?:\/\/[^/]+)?(\/?[^/?#]+(?:\/[^/?#]+)?)/;
-            let [, repo] = urlInput.value.match(repoRegex);
-            if(!repo.startsWith("/")) repo = "/" + repo;
-            const isRepoStored = await !chrome.storage.local.get(repo) ? true : false;
+            const repo = getRepoName(urlInput.value);
+            const isRepoStored = repo in await chrome.storage.local.get(repo);
             if (!isRepoStored) {
                 chrome.storage.local.set({
-                    [repo]: 
+                    [repo]:
                     {
                         generalNotes: [noteInput.value],
                         files: {}
@@ -57,7 +69,7 @@ async function load() {
                 });
             }
             else {
-                const {repo: {
+                const {[repo]: {
                     generalNotes: repoNotes,
                     files: repoLineNotes
                     }
@@ -65,25 +77,27 @@ async function load() {
                 chrome.storage.local.set({
                     [repo]:
                     {
-                        genralNotes: [...repoNotes, noteInput.value],
+                        generalNotes: [...repoNotes, noteInput.value],
                         files: repoLineNotes
                     }
                 });
             }
-            showGeneralNotes();
-            setControllers();
+            await showGeneralNotes();
+            setControls();
         }
 
     })
 
     removeAllBtn.onclick = async () => {
         await chrome.storage.local.clear();
-        showGeneralNotes();
-        setControllers();
+        await showGeneralNotes();
+        setControls();
     }
 
-    async function showGeneralNotes() {
-        const notes = Object.entries(await chrome.storage.local.get(null));
+    async function showGeneralNotes(viewedRepo = "") {
+        const notes = viewedRepo ? 
+        Object.entries(await chrome.storage.local.get(viewedRepo)) : 
+        Object.entries(await chrome.storage.local.get(null));
         let html = "";
         notes.forEach(([repo, {generalNotes}]) => {
             html += `
@@ -105,33 +119,58 @@ async function load() {
         notesContainer.innerHTML = html;
     }
 
-    function setControllers() {
+    function setControls() {
         const reposNotes = document.querySelectorAll(".notes div");
+        
         for (const repo of reposNotes) {
             const notes = document.querySelectorAll(`[id="${repo.id}"] div`);
             let i = 0;
+            
             for (const note of notes) {
+                const currentIndex = i;
                 const noteText = document.querySelector(`[id="${note.id}"] h3`).textContent;
+                
                 document.querySelector(`[id="${note.id}"] .edit-btn`).onclick = () => {
                     editUrlInput.value = `github.com${repo.id}`;
                     editNoteInput.value = noteText;
                     editNoteForm.style.display = "block";
+                    
                     editNoteBtn.onclick = async () => {
-                        if (!editNoteInput.value) {
-                            alert("Enter some note");
-                            return;
+                        try {
+                            if (!editNoteInput.value) {
+                                alert("Enter some note");
+                                return;
+                            }
+                            const repoObj = await chrome.storage.local.get(repo.id);
+                            repoObj[repo.id].generalNotes[currentIndex] = editNoteInput.value;
+                            await chrome.storage.local.set(repoObj);
+                            editNoteForm.style.display = "none";
+                            await showGeneralNotes();
+                            setControls();
+                        } catch (error) {
+                            console.error("Error during edit:", error);
                         }
-                        const repoObj = await chrome.storage.local.get(repo.id);
-                        repoObj.repo.generalNotes[i] = editNoteInput.value;
-                        chrome.storage.local.set(repoObj);
-                        editNoteForm.style.display = "none";
-                        showGeneralNotes();
                     }
                 }
-                document.querySelector(`[id="${note.id}"] .rmv-btn`).onclick = () => {
-                    chrome.storage.local.remove(note.id);
-                    showGeneralNotes();
+                
+                document.querySelector(`[id="${note.id}"] .rmv-btn`).onclick = async () => {
+                    try {
+                        const repoObj = await chrome.storage.local.get(repo.id);
+                        if (repoObj[repo.id].generalNotes.length === 1) {
+                            await chrome.storage.local.remove(repo.id);
+                            await showGeneralNotes();
+                            setControls();
+                            return;
+                        }
+                        repoObj[repo.id].generalNotes.splice(currentIndex, 1);
+                        await chrome.storage.local.set(repoObj);
+                        await showGeneralNotes();
+                        setControls();
+                    } catch (error) {
+                        console.error("Error during remove:", error);
+                    }
                 }
+                
                 i++;
             }
         }
