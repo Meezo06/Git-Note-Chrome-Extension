@@ -16,10 +16,21 @@ async function load() {
     }
 
     const getRepoName = (url) => {
-        const repoRegex = /^(?:https?:\/\/[^/]+)?(\/?[^/?#]+(?:\/[^/?#]+)?)/;
+        const repoRegex = /^(?:(?:https?:\/\/)?[\w.-]+\.[^/]+)?(\/?[^/?#]+(?:\/[^/?#]+)?)/;
         let [, repo] = url.match(repoRegex);
         if(!repo.startsWith("/")) repo = "/" + repo;
         return repo;
+    }
+
+    const showCurrentNotes = async () => {
+        const isRepo = await isGithubRepo(await getCurrentTabUrl());
+        if(isRepo) {
+            const repoName = getRepoName(await getCurrentTabUrl());
+            await showGeneralNotes(repoName);
+        }
+        else {
+            await showGeneralNotes();
+        }
     }
 
     const noteFormBtn = document.getElementById("note-form-btn");
@@ -82,7 +93,7 @@ async function load() {
                     }
                 });
             }
-            await showGeneralNotes();
+            await showCurrentNotes();
             setControls();
         }
 
@@ -90,7 +101,7 @@ async function load() {
 
     removeAllBtn.onclick = async () => {
         await chrome.storage.local.clear();
-        await showGeneralNotes();
+        await showCurrentNotes();
         setControls();
     }
 
