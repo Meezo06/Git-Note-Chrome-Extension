@@ -1,27 +1,221 @@
-body {
-    width: 400px;
-    height: 350px;
-    background-color: rgb(1, 4, 9);
-}
-
-.tools {
-    margin-left: 10px;
+:root {
+    /* --- LIGHT THEME (Default) --- */
+    --gh-bg: #ffffff;
+    --gh-bg-secondary: #f6f8fa;     /* Headers, Form backgrounds */
+    --gh-bg-input: #ffffff;
     
+    --gh-text-primary: #24292f;
+    --gh-text-secondary: #57606a;
+    --gh-link: #0969da;
+    
+    --gh-border: #d0d7de;
+    --gh-border-secondary: #d0d7de; /* Sometimes borders are lighter in dark mode */
+    
+    --gh-btn-green: #2da44e;
+    --gh-btn-green-hover: #2c974b;
+    --gh-btn-red: #cf222e;
+    --gh-btn-secondary-bg: #f6f8fa;
+    --gh-btn-secondary-hover: #f3f4f6;
+    
+    --gh-focus-blue: #0969da;
 }
 
-#note-form-btn, #remove-all-btn {
-    background-color: transparent;
-    border: none;
-    color: rgb(240, 246, 252);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+/* --- DARK THEME OVERRIDE --- */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --gh-bg: #0d1117;           /* GitHub Main Dark Background */
+        --gh-bg-secondary: #161b22; /* Header Background */
+        --gh-bg-input: #0d1117;
+        
+        --gh-text-primary: #c9d1d9;
+        --gh-text-secondary: #8b949e;
+        --gh-link: #58a6ff;
+        
+        --gh-border: #30363d;
+        --gh-border-secondary: #21262d;
+        
+        --gh-btn-green: #238636;
+        --gh-btn-green-hover: #2ea043;
+        --gh-btn-red: #f85149;
+        --gh-btn-secondary-bg: #21262d;
+        --gh-btn-secondary-hover: #30363d;
+        
+        --gh-focus-blue: #58a6ff;
+    }
+}
+
+/* 1. Global Reset & Typography */
+body {
+    width: 350px;
+    min-height: 200px;
+    margin: 0;
+    padding: 16px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background-color: var(--gh-bg);
+    color: var(--gh-text-primary);
+    box-sizing: border-box;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+/* 2. Buttons */
+button {
+    appearance: none;
+    border: 1px solid var(--gh-border); /* Changed to use variable for dark mode border */
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-block;
     font-size: 14px;
-    font-weight: 400;   
+    font-weight: 500;
+    line-height: 20px;
+    padding: 5px 16px;
+    position: relative;
+    user-select: none;
+    transition: 0.2s cubic-bezier(0.3, 0, 0.5, 1);
 }
 
-.tools button:hover {
-    background-color: rgba(101, 108, 118, 0.2);
+/* Primary "Add" Button (Green) */
+#note-form-btn, #add-note-btn, #edit-note-btn {
+    background-color: var(--gh-btn-green);
+    color: #ffffff;
+    border-color: rgba(240, 246, 252, 0.1);
 }
 
+#note-form-btn:hover, #add-note-btn:hover, #edit-note-btn:hover {
+    background-color: var(--gh-btn-green-hover);
+}
+
+/* Danger Button (Red Text/Outline) */
+#remove-all-btn, .rmv-btn {
+    color: var(--gh-btn-red);
+    background-color: var(--gh-btn-secondary-bg);
+    border-color: var(--gh-border);
+}
+
+#remove-all-btn:hover, .rmv-btn:hover {
+    background-color: var(--gh-btn-secondary-hover);
+    /* In dark mode, we don't want the bright red background on hover, just a subtle change */
+}
+
+/* Secondary Button (Grey) */
+#cancel-note-btn, #cancel-edit-btn, .edit-btn {
+    color: var(--gh-text-primary);
+    background-color: var(--gh-btn-secondary-bg);
+    border-color: var(--gh-border);
+}
+
+#cancel-note-btn:hover, #cancel-edit-btn:hover, .edit-btn:hover {
+    background-color: var(--gh-btn-secondary-hover);
+}
+
+/* 3. Inputs & Textareas */
+input, textarea {
+    width: 100%;
+    margin-bottom: 12px;
+    padding: 5px 12px;
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--gh-text-primary);
+    background-color: var(--gh-bg-input); /* Uses variable now */
+    border: 1px solid var(--gh-border);
+    border-radius: 6px;
+    box-shadow: none; /* Removed inner shadow for cleaner dark mode look */
+    transition: 80ms cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+input:focus, textarea:focus {
+    border-color: var(--gh-focus-blue);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.3);
+}
+
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--gh-text-primary);
+}
+
+/* 4. Layout Sections */
+.tools {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--gh-border);
+}
+
+/* Forms */
 .new-note, .edit-note {
     display: none;
+    background: var(--gh-bg-secondary);
+    border: 1px solid var(--gh-border);
+    border-radius: 6px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.new-note button, .edit-note button {
+    margin-right: 8px;
+}
+
+/* 5. Repository & Notes List */
+.notes > div {
+    border: 1px solid var(--gh-border);
+    border-radius: 6px;
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+
+/* Repository Header Link */
+.notes > div > a {
+    display: block;
+    background-color: var(--gh-bg-secondary);
+    padding: 10px 16px;
+    font-weight: 600;
+    color: var(--gh-text-primary);
+    text-decoration: none;
+    border-bottom: 1px solid var(--gh-border);
+    font-size: 14px;
+}
+
+.notes > div > a:hover {
+    color: var(--gh-link);
+    text-decoration: underline;
+}
+
+/* Individual Note Rows */
+.notes > div > div {
+    padding: 10px 16px;
+    border-top: 1px solid var(--gh-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--gh-bg);
+}
+
+.notes > div > a + div {
+    border-top: none;
+}
+
+.notes h3 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--gh-text-secondary);
+    flex-grow: 1;
+    margin-right: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Action buttons inside a note */
+.notes .edit-btn, .notes .rmv-btn {
+    padding: 3px 10px;
+    font-size: 12px;
+    margin-left: 4px;
 }

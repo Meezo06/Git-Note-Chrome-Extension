@@ -4,3 +4,99 @@
     margin: 0 1px;
     background-color: transparent;
 }
+
+/* --- Dialog Container --- */
+.line-note-modal {
+    /* Layout & Positioning */
+    position: fixed; /* Fixed so it stays in view */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    padding: 0;
+    width: 320px;
+    
+    /* Github Box Styling */
+    background-color: var(--gh-bg);
+    border: 1px solid var(--gh-border);
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); /* Drop shadow for pop-out effect */
+    color: var(--gh-text-primary);
+    
+    /* Ensure it sits on top but doesn't block clicks outside */
+    z-index: 999;
+}
+
+/* NON-BLOCKING MAGIC:
+   1. If opened with .showModal(), ::backdrop usually blocks the page. 
+      We hide it and disable pointer events on it.
+   2. We ensure the dialog itself accepts clicks.
+*/
+.line-note-modal::backdrop {
+    background: transparent;
+    pointer-events: none; 
+}
+
+/* --- Header with Title and X --- */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 16px;
+    background-color: var(--gh-bg-secondary);
+    border-bottom: 1px solid var(--gh-border);
+    font-weight: 600;
+    font-size: 14px;
+}
+
+/* The Close 'X' Button */
+.close-icon {
+    background: transparent;
+    border: none;
+    padding: 4px; /* Smaller hit area */
+    color: var(--gh-text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    margin: 0; /* Reset global button margin if any */
+}
+
+.close-icon:hover {
+    background-color: rgba(0,0,0,0.08); /* Subtle hover */
+    color: var(--gh-text-primary);
+}
+
+/* Dark mode adjustment for close hover */
+@media (prefers-color-scheme: dark) {
+    .close-icon:hover {
+        background-color: rgba(255,255,255,0.1);
+    }
+}
+
+/* --- Body & Footer --- */
+.modal-body {
+    padding: 16px;
+}
+
+.line-note-modal textarea {
+    min-height: 80px;
+    resize: vertical;
+    margin-bottom: 12px;
+    font-family: inherit; /* Matches standard monospace or system font */
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end; /* Align button to right */
+}
+
+.modal-footer button {
+    /* Inherits the Green button styles from your global CSS */
+    background-color: var(--gh-btn-green);
+    color: #ffffff;
+    font-weight: 600;
+}
+.modal-footer button:hover {
+    background-color: var(--gh-btn-green-hover);
+}
