@@ -8,7 +8,7 @@ async function load() {
         )
         return currentTabUrl;
     }
-
+    
     const isGithubRepo = async (url) => {
         if (!url.startsWith("https://github.com")) return false
         const {ok: isOk} = await fetch(url, {method: 'HEAD'});
