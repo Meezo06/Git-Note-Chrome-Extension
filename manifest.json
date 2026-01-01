@@ -15,7 +15,8 @@
         {
             "matches": ["https://github.com/*/*/blob/*/*"],
             "js": ["content-script.js"],
-            "css": ["script-style.css"]
+            "css": ["script-style.css"],
+            "run_at": "document_idle"
         }
     ]
 }

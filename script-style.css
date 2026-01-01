@@ -102,9 +102,18 @@
 }
 
 .note-btn {
-    background-color: red;
+    background-color: transparent;
     border: none;
-    border-radius: 5px;
-    width: 50px;
     cursor: pointer;
+}
+
+#note-container {
+    position: absolute;
+    display: none;
+    width: 200px;
+    height: 100px;
+}
+
+#note-container h3 {
+    margin: auto;
 }

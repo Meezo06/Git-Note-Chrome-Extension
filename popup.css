@@ -219,14 +219,3 @@ label {
     font-size: 12px;
     margin-left: 4px;
 }
-
-#note-container {
-    position: absolute;
-    display: none;
-    width: 200px;
-    height: 100px;
-}
-
-#note-container h3 {
-    margin: auto;
-}

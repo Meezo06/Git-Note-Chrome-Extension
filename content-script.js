@@ -4,7 +4,15 @@ const fileRegex = /\/[^/]+\/[^/]+\/blob\/[^/]+(\/.+)/;
 const repoRegex = /^(\/[^/]+\/[^/]+)/;
 const [, file] = location.pathname.match(fileRegex);
 const repo = location.pathname.match(repoRegex)[1].replace(/#.*/, "");
-const commitHash = document.querySelector('.flex-nowrap .Link--secondary').textContent;
+let commitHash;
+const observer = new MutationObserver((mutations) => {
+    commitHash = document.querySelector(".flex-nowrap .Link--secondary")?.textContent;
+    if (commitHash) observer.disconnect();
+})
+observer.observe(document.body, {
+    childList: true,
+    subtree: true
+})
 chrome.storage.local.remove(repo);
 
 if (lineMenu) {
@@ -114,3 +122,4 @@ async function showLineNotes() {
         console.error(e);
     }
 }
+
