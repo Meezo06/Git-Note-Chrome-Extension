@@ -6,14 +6,32 @@ const [, file] = location.pathname.match(fileRegex);
 const repo = location.pathname.match(repoRegex)[1].replace(/#.*/, "");
 let commitHash;
 const observer = new MutationObserver((mutations) => {
-    commitHash = document.querySelector(".flex-nowrap .Link--secondary")?.textContent;
-    if (commitHash) observer.disconnect();
+    for (const mutation of mutations) {
+        commitHash = document.querySelector(".flex-nowrap .Link--secondary")?.textContent;
+        if (commitHash) observer.disconnect();
+    }
 })
 observer.observe(document.body, {
     childList: true,
     subtree: true
 })
 chrome.storage.local.remove(repo);
+
+const noteContainer = document.createElement("dialog");
+noteContainer.innerHTML= `
+    <button class="close-icon" aria-label="Close">
+            <svg aria-hidden="true" viewBox="0 0 16 16" version="1.1" width="16" height="16" fill="currentColor">
+                <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path>
+            </svg>
+    </button>
+    <h3 class="note-text"></h3>
+    <h4 class="warning">Warning, this note is added in an older commit</h4>
+`
+noteContainer.className = "note-container";
+lineMenu.insertAdjacentElement("afterbegin", noteContainer);
+const noteText = document.querySelector(".note-container .note-text");
+const noteWarning = document.querySelector(".note-container .warning");
+document.querySelector(".note-container .close-icon").onclick = () => noteContainer.close();
 
 if (lineMenu) {
     showLineNotes();
@@ -39,7 +57,6 @@ if (lineMenu) {
     document.querySelector(`#${modal.id} .close-icon`).onclick = () => modal.close();
     const addNoteBtn = document.querySelector(`#${modal.id} .primary-btn`);
     const noteInput = document.querySelector(`#${modal.id} textarea`);
-
     lines.forEach((line, index) => {
         const btn = document.createElement("button");        
         btn.textContent = "📝";
@@ -91,31 +108,20 @@ async function showLineNotes() {
         lineNotes.forEach(({note, line, createdAt, commit}) => {
             const noteBtn = document.createElement("button");
             noteBtn.className = "note-btn";
-            const noteContainer = document.createElement("div");
-            const noteText = document.createElement("h3");
-            const closeBtn = document.createElement("button");
-            closeBtn.innerHTML = `
-                <svg aria-hidden="true" viewBox="0 0 16 16" version="1.1" width="16" height="16" fill="currentColor">
-                    <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"></path>
-                </svg>
-            `
-            noteText.textContent = note + "\ncreated at: " + createdAt;
-            closeBtn.onclick = () => noteContainer.style.display = "none";
-            noteContainer.id = "note-container";
-            noteContainer.insertAdjacentElement("beforebegin", closeBtn);
-            noteContainer.insertAdjacentElement("beforeend", noteText);
-            lines[line - 1].insertAdjacentElement("beforeend", noteContainer);
-            noteBtn.onclick = () => noteContainer.style.display = "block";
+            noteBtn.addEventListener("click", () => {
+                noteText.textContent = note + " " + createdAt;
+                noteContainer.showModal();
+            })
             if (commit != commitHash) {
                 noteBtn.textContent = "📕";
-                const warning = document.createElement("h4");
-                warning.textContent = "Warning: this note has been created in an older commit\n it might not refrence the line earlier"
-                noteContainer.insertAdjacentElement("beforeend", warning);
+                noteBtn.addEventListener("click", () => {
+                    noteWarning.style.display = "block";
+                })
             }
             else {
                 noteBtn.textContent = "📗";
             }
-            lines[line - 1].insertAdjacentElement("beforebegin", noteBtn);
+            lines[line - 1].insertAdjacentElement("afterbegin", noteBtn);
         })
     }
     catch (e) {

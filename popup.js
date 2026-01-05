@@ -18,7 +18,6 @@ async function load() {
     const getRepoName = (url) => {
         const repoRegex = /^(?:(?:https?:\/\/)?[\w.-]+\.[^/]+)?(\/?[^/?#]+(?:\/[^/?#]+)?)/;
         let [, repo] = url.match(repoRegex);
-        if(!repo.startsWith("/")) repo = "/" + repo;
         return repo;
     }
 
@@ -53,7 +52,7 @@ async function load() {
     let currentUrl = await getCurrentTabUrl();
     if(await isGithubRepo(currentUrl)) {
         const repoName = getRepoName(currentUrl);
-        urlInput.value = "github.com" + repoName;
+        urlInput.value = "github.com/" + repoName;
         await showGeneralNotes(repoName);
     }
     else {

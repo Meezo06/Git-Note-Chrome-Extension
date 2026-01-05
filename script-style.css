@@ -6,7 +6,7 @@
 }
 
 /* --- Dialog Container --- */
-.line-note-modal {
+.line-note-modal, .note-container {
     /* Layout & Positioning */
     position: fixed; /* Fixed so it stays in view */
     top: 50%;
@@ -105,15 +105,13 @@
     background-color: transparent;
     border: none;
     cursor: pointer;
+    padding: 0;
 }
 
-#note-container {
-    position: absolute;
-    display: none;
-    width: 200px;
-    height: 100px;
-}
-
-#note-container h3 {
+.note-container .note-text, .note-container .warning {
     margin: auto;
+    color: black;
+}
+.note-container .warning {
+    display: none;
 }
