@@ -3,7 +3,7 @@
     "name": "Git-Note",
     "version": "1.0",
     "description": "Make notes and highlight Github repositories",
-    "permissions": ["activeTab", "scripting", "storage"],
+    "permissions": ["activeTab", "storage"],
     "action": {
         "default_popup": "popup.html"
     },
@@ -12,8 +12,7 @@
         {
             "matches": ["https://github.com/*/*/blob/*/*"],
             "js": ["content-script.js"],
-            "css": ["script-style.css"],
-            "run_at": "document_idle"
+            "css": ["script-style.css"]
         }
     ]
 }

@@ -125,6 +125,11 @@ input, textarea {
     transition: 80ms cubic-bezier(0.33, 1, 0.68, 1);
 }
 
+textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
 input:focus, textarea:focus {
     border-color: var(--gh-focus-blue);
     outline: none;
@@ -192,8 +197,9 @@ label {
     padding: 10px 16px;
     border-top: 1px solid var(--gh-border);
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 8px;
     background-color: var(--gh-bg);
 }
 
@@ -206,16 +212,17 @@ label {
     font-size: 14px;
     font-weight: 400;
     color: var(--gh-text-secondary);
-    flex-grow: 1;
-    margin-right: 12px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    flex-basis: 100%;
+    word-wrap: break-word;
+    white-space: normal;
+    max-height: 150px;
+    overflow-y: auto;
+    padding-right: 8px;
 }
 
 /* Action buttons inside a note */
 .notes .edit-btn, .notes .rmv-btn {
     padding: 3px 10px;
     font-size: 12px;
-    margin-left: 4px;
+    display: inline-block;
 }

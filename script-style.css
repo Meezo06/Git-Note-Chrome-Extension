@@ -1,3 +1,31 @@
+:root {
+    /* --- LIGHT THEME (Default) --- */
+    --gh-bg: #ffffff;
+    --gh-bg-secondary: #f6f8fa;
+    --gh-text-primary: #24292f;
+    --gh-text-secondary: #57606a;
+    --gh-border: #d0d7de;
+    --gh-btn-green: #2da44e;
+    --gh-btn-green-hover: #2c974b;
+    --gh-bg-input: #ffffff;
+    --gh-focus-blue: #0969da;
+}
+
+/* --- DARK THEME OVERRIDE --- */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --gh-bg: #0d1117;
+        --gh-bg-secondary: #161b22;
+        --gh-text-primary: #c9d1d9;
+        --gh-text-secondary: #8b949e;
+        --gh-border: #30363d;
+        --gh-btn-green: #238636;
+        --gh-btn-green-hover: #2ea043;
+        --gh-bg-input: #0d1117;
+        --gh-focus-blue: #58a6ff;
+    }
+}
+
 .line-note-btn {
     padding: 0;
     border: none;
@@ -8,23 +36,24 @@
 /* --- Dialog Container --- */
 .line-note-modal, .note-container {
     /* Layout & Positioning */
-    position: fixed; /* Fixed so it stays in view */
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    margin: 0;
-    padding: 0;
-    width: 320px;
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 320px !important;
     
     /* Github Box Styling */
-    background-color: var(--gh-bg);
-    border: 1px solid var(--gh-border);
-    border-radius: 6px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); /* Drop shadow for pop-out effect */
-    color: var(--gh-text-primary);
+    background-color: var(--gh-bg) !important;
+    border: 1px solid var(--gh-border) !important;
+    border-radius: 6px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+    color: var(--gh-text-primary) !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif !important;
     
     /* Ensure it sits on top but doesn't block clicks outside */
-    z-index: 999;
+    z-index: 9999 !important;
 }
 
 /* NON-BLOCKING MAGIC:
@@ -32,86 +61,121 @@
       We hide it and disable pointer events on it.
    2. We ensure the dialog itself accepts clicks.
 */
-.line-note-modal::backdrop {
-    background: transparent;
-    pointer-events: none; 
+.line-note-modal::backdrop, .note-container::backdrop {
+    background: rgba(0, 0, 0, 0.5) !important;
+    pointer-events: none !important; 
 }
 
 /* --- Header with Title and X --- */
 .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 16px;
-    background-color: var(--gh-bg-secondary);
-    border-bottom: 1px solid var(--gh-border);
-    font-weight: 600;
-    font-size: 14px;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 8px 16px !important;
+    background-color: var(--gh-bg-secondary) !important;
+    border-bottom: 1px solid var(--gh-border) !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    color: var(--gh-text-primary) !important;
 }
 
 /* The Close 'X' Button */
 .close-icon {
-    background: transparent;
-    border: none;
-    padding: 4px; /* Smaller hit area */
-    color: var(--gh-text-secondary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
-    margin: 0; /* Reset global button margin if any */
+    background: transparent !important;
+    border: none !important;
+    padding: 4px !important;
+    color: var(--gh-text-secondary) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 4px !important;
+    margin: 0 !important;
+    cursor: pointer !important;
+    width: 24px !important;
+    height: 24px !important;
 }
 
 .close-icon:hover {
-    background-color: rgba(0,0,0,0.08); /* Subtle hover */
-    color: var(--gh-text-primary);
-}
-
-/* Dark mode adjustment for close hover */
-@media (prefers-color-scheme: dark) {
-    .close-icon:hover {
-        background-color: rgba(255,255,255,0.1);
-    }
+    background-color: var(--gh-border) !important;
+    color: var(--gh-text-primary) !important;
 }
 
 /* --- Body & Footer --- */
 .modal-body {
-    padding: 16px;
+    padding: 16px !important;
 }
 
-.line-note-modal textarea {
-    min-height: 80px;
-    resize: vertical;
-    margin-bottom: 12px;
-    font-family: inherit; /* Matches standard monospace or system font */
+.line-note-modal textarea, .note-container textarea {
+    min-height: 80px !important;
+    resize: vertical !important;
+    margin-bottom: 12px !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif !important;
+    width: 100% !important;
+    padding: 5px 12px !important;
+    font-size: 14px !important;
+    line-height: 20px !important;
+    color: var(--gh-text-primary) !important;
+    background-color: var(--gh-bg-input) !important;
+    border: 1px solid var(--gh-border) !important;
+    border-radius: 6px !important;
+    box-sizing: border-box !important;
+    transition: 80ms cubic-bezier(0.33, 1, 0.68, 1) !important;
+}
+
+.line-note-modal textarea:focus, .note-container textarea:focus {
+    border-color: var(--gh-focus-blue) !important;
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.3) !important;
 }
 
 .modal-footer {
-    display: flex;
-    justify-content: flex-end; /* Align button to right */
+    display: flex !important;
+    justify-content: flex-end !important;
+    gap: 8px !important;
 }
 
-.modal-footer button {
-    /* Inherits the Green button styles from your global CSS */
-    background-color: var(--gh-btn-green);
-    color: #ffffff;
-    font-weight: 600;
+.modal-footer button, .primary-btn {
+    background-color: var(--gh-btn-green) !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    border: 1px solid rgba(240, 246, 252, 0.1) !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    display: inline-block !important;
+    font-size: 14px !important;
+    line-height: 20px !important;
+    padding: 5px 16px !important;
+    user-select: none !important;
+    transition: 0.2s cubic-bezier(0.3, 0, 0.5, 1) !important;
 }
-.modal-footer button:hover {
-    background-color: var(--gh-btn-green-hover);
+
+.modal-footer button:hover, .primary-btn:hover {
+    background-color: var(--gh-btn-green-hover) !important;
 }
 
 .note-btn {
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 0;
+    background-color: transparent !important;
+    border: none !important;
+    cursor: pointer !important;
+    padding: 0 !important;
 }
 
 .note-container .note-text, .note-container .warning {
-    margin: auto;
-    color: black;
+    margin: 0 !important;
+    color: var(--gh-text-primary) !important;
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+    word-wrap: break-word !important;
+    white-space: normal !important;
 }
+
+.note-container .note-text {
+    padding: 16px !important;
+}
+
 .note-container .warning {
-    display: none;
+    display: none !important;
+    color: var(--gh-btn-green) !important;
+    padding: 8px 16px !important;
+    font-size: 12px !important;
 }
