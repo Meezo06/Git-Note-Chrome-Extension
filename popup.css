@@ -100,13 +100,13 @@ button {
 }
 
 /* Secondary Button (Grey) */
-#cancel-note-btn, #cancel-edit-btn, .edit-btn {
+#cancel-note-btn, #cancel-edit-btn, .edit-btn, #show-all {
     color: var(--gh-text-primary);
     background-color: var(--gh-btn-secondary-bg);
     border-color: var(--gh-border);
 }
 
-#cancel-note-btn:hover, #cancel-edit-btn:hover, .edit-btn:hover {
+#cancel-note-btn:hover, #cancel-edit-btn:hover, .edit-btn:hover, #show-all:hover {
     background-color: var(--gh-btn-secondary-hover);
 }
 
@@ -147,10 +147,19 @@ label {
 /* 4. Layout Sections */
 .tools {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start; /* pack buttons together on the left */
+    gap: 8px;                     /* space between buttons */
+    align-items: center;
     margin-bottom: 16px;
     padding-bottom: 16px;
     border-bottom: 1px solid var(--gh-border);
+}
+
+/* make buttons inside .tools a bit smaller */
+.tools button {
+    padding: 4px 10px;
+    font-size: 13px;
+    line-height: 18px;
 }
 
 /* Forms */

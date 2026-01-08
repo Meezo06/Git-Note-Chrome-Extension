@@ -15,7 +15,6 @@ observer.observe(document.body, {
     childList: true,
     subtree: true
 })
-chrome.storage.local.remove(repo);
 
 const noteContainer = document.createElement("dialog");
 noteContainer.innerHTML= `
@@ -25,11 +24,13 @@ noteContainer.innerHTML= `
             </svg>
     </button>
     <h3 class="note-text"></h3>
+    <h5 class="note-date"></h5>
     <h4 class="warning">Warning, this note is added in an older commit</h4>
 `
 noteContainer.className = "note-container";
-lineMenu.insertAdjacentElement("afterbegin", noteContainer);
+lineMenu?.insertAdjacentElement("afterbegin", noteContainer);
 const noteText = document.querySelector(".note-container .note-text");
+const noteDate = document.querySelector(".note-container .note-date");
 const noteWarning = document.querySelector(".note-container .warning");
 document.querySelector(".note-container .close-icon").onclick = () => noteContainer.close();
 
@@ -109,7 +110,8 @@ async function showLineNotes() {
             const noteBtn = document.createElement("button");
             noteBtn.className = "note-btn";
             noteBtn.addEventListener("click", () => {
-                noteText.textContent = note + " " + createdAt;
+                noteText.textContent = note;
+                noteDate.textContent = createdAt;
                 noteContainer.showModal();
             })
             if (commit != commitHash) {

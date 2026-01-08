@@ -7,6 +7,7 @@
     --gh-border: #d0d7de;
     --gh-btn-green: #2da44e;
     --gh-btn-green-hover: #2c974b;
+    --gh-btn-red: #cf222e;
     --gh-bg-input: #ffffff;
     --gh-focus-blue: #0969da;
 }
@@ -160,22 +161,43 @@
     padding: 0 !important;
 }
 
-.note-container .note-text, .note-container .warning {
-    margin: 0 !important;
-    color: var(--gh-text-primary) !important;
-    font-size: 14px !important;
-    line-height: 1.5 !important;
-    word-wrap: break-word !important;
-    white-space: normal !important;
+/* Tidy up the inline note dialog */
+.note-container {
+    padding: 12px !important;
+    min-width: 280px !important;
+    box-sizing: border-box !important;
 }
 
+/* position the close button inside the small note container */
+.note-container .close-icon {
+    position: absolute !important;
+    top: 8px !important;
+    right: 8px !important;
+    width: 28px !important;
+    height: 28px !important;
+}
+
+/* note body typography & spacing */
 .note-container .note-text {
-    padding: 16px !important;
+    padding: 8px 0 !important;
+    margin: 0 !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: var(--gh-text-primary) !important;
 }
 
+.note-container .note-date {
+    margin: 4px 0 8px 0 !important;
+    font-size: 12px !important;
+    color: var(--gh-text-secondary) !important;
+    font-weight: 400 !important;
+}
+
+/* warning uses red and sits inline with the rest */
 .note-container .warning {
     display: none !important;
-    color: var(--gh-btn-green) !important;
-    padding: 8px 16px !important;
+    color: var(--gh-btn-red) !important;
+    padding: 6px 0 0 0 !important;
     font-size: 12px !important;
+    margin: 0 !important;
 }

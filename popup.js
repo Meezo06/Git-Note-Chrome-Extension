@@ -48,6 +48,7 @@ const cancelEditBtn = document.getElementById("cancel-edit-btn");
 noteFormBtn.onclick = () => newNoteForm.style.display = "block";
 cancelNoteBtn.onclick = () => newNoteForm.style.display = "none";
 cancelEditBtn.onclick = () => editNoteForm.style.display = "none";
+document.getElementById("show-all").onclick = () => showGeneralNotes();
 
 let currentUrl = await getCurrentTabUrl();
 if(await isGithubRepo(currentUrl)) {
@@ -158,7 +159,8 @@ function setControls() {
 			document.querySelector(`[id="${note.id}"] .rmv-btn`).onclick = async () => {
 				try {
 					const repoObj = await chrome.storage.local.get(repo.id);
-					if (repoObj[repo.id].generalNotes.length === 1) {
+					const noFilesNotes = Object.entries(repoObj[repo.id].files).length === 0;
+					if (repoObj[repo.id].generalNotes.length === 1 && noFilesNotes) {
 						await chrome.storage.local.remove(repo.id);
 						await showGeneralNotes();
 						setControls();
